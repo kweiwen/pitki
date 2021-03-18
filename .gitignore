@@ -1,0 +1,16 @@
+# Pycharm generated files
+.idea/*
+
+# Precompiled python modules
+*.pyc
+
+# OS-generated files (OS X)
+*.DS_Store
+*.Spotlight-V100
+*.Trashes
+._*
+
+# OS-generated files (Windows)
+desktop.ini
+ehthumbs.db
+Thumbs.db
