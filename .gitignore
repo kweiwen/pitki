@@ -4,6 +4,9 @@
 # Precompiled python modules
 *.pyc
 
+# Checkpoints from jupyter notebook
+.ipynb_checkpoints
+
 # OS-generated files (OS X)
 *.DS_Store
 *.Spotlight-V100
