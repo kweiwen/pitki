@@ -5,8 +5,7 @@
 *.pyc
 
 # Checkpoints from jupyter notebook
-*/.ipynb_checkpoints
-*.ipynb
+*.ipynb_checkpoints
 
 # OS-generated files (OS X)
 *.DS_Store
