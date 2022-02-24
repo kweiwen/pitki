@@ -1,17 +1,11 @@
 from math import *
 import numpy as np
 
-def sinc(x):
-    if x == 0:
-        return 1.0
-    else:
-        return sin(x) / x
-
 def sim_microphone(x, y, z, angle, mtype):
     #  Polar Pattern         alpha
     #  ---------------------------
     #  Bidirectional         0
-    #  Hypercardioid         0.25    
+    #  Hypercardioid         0.25
     #  Cardioid              0.5
     #  Subcardioid           0.75
     #  Omnidirectional       1
@@ -37,16 +31,10 @@ def sim_microphone(x, y, z, angle, mtype):
     else:
         return 1
 
-
 def computeRIR(c, fs, rr, nMicrophones, nSamples, ss, LL, beta, microphone_type, nOrder, angle, isHighPassFilter):
     imp = np.zeros([nSamples, nMicrophones], dtype=np.double)
-    W = 2 * pi * 100 / fs
-    R1 = exp(-W)
-    B1 = 2 * R1 * cos(W)
-    B2 = -R1 * R1
-    A1 = -(1 + R1)
 
-    Fc = 1
+    Fc = 0.5
     Tw = 2 * round(0.004 * fs)
     cTs = c / fs
 
@@ -104,20 +92,24 @@ def computeRIR(c, fs, rr, nMicrophones, nSamples, ss, LL, beta, microphone_type,
                                     fdist = floor(dist)
 
                                     if fdist < nSamples:
-                                        gain = sim_microphone(Rp_plus_Rm[0], Rp_plus_Rm[1], Rp_plus_Rm[2], angle,
-                                                              microphone_type[0]) * refl[0] * refl[1] * refl[2] / (
-                                                           4 * pi * dist * cTs)
+                                        gain = sim_microphone(Rp_plus_Rm[0], Rp_plus_Rm[1], Rp_plus_Rm[2], angle, microphone_type[0]) * refl[0] * refl[1] * refl[2] / (4 * pi * dist * cTs)
 
                                         for n in range(Tw):
-                                            LPI[n] = 0.5 * (
-                                                        1 - cos(2 * pi * ((n + 1 - (dist - fdist)) / Tw))) * Fc * sinc(
-                                                pi * Fc * (n + 1 - (dist - fdist) - (Tw / 2)))
+                                            t = (n - 0.5 * Tw + 1) - (dist - fdist)
+                                            LPI[n] = 0.5 * (1.0 + np.cos(2 * pi * t / Tw)) * np.sinc(pi * 2 * Fc * t)
 
                                         startPosition = int(fdist - (Tw / 2) + 1)
 
                                         for n in range(Tw):
                                             if startPosition + n >= 0 and startPosition + n < nSamples:
                                                 imp[idxMicrophone + nMicrophones * (startPosition + n)] += gain * LPI[n]
+
+        # HIGH Pass FILTER
+        W = 2 * pi * 100 / fs
+        R1 = exp(-W)
+        B1 = 2 * R1 * cos(W)
+        B2 = -R1 * R1
+        A1 = -(1 + R1)
 
         #  'Original' high-pass filter as proposed by Allen and Berkley.
         if isHighPassFilter == 1:
@@ -130,7 +122,6 @@ def computeRIR(c, fs, rr, nMicrophones, nSamples, ss, LL, beta, microphone_type,
                 Y[0] = B1 * Y[1] + B2 * Y[2] + X0
                 imp[idx][idxMicrophone] = Y[0] + A1 * Y[1] + R1 * Y[2]
     return imp
-
 
 def rir_generator(c, samplingRate, micPositions, srcPosition, LL, **kwargs):
     if type(LL) is not np.array:
