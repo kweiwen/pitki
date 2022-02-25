@@ -92,11 +92,11 @@ def computeRIR(c, fs, rr, nMicrophones, nSamples, ss, LL, beta, microphone_type,
                                     fdist = floor(dist)
 
                                     if fdist < nSamples:
-                                        gain = sim_microphone(Rp_plus_Rm[0], Rp_plus_Rm[1], Rp_plus_Rm[2], angle, microphone_type[0]) * refl[0] * refl[1] * refl[2] / (4 * pi * dist * cTs)
+                                        gain = sim_microphone(Rp_plus_Rm[0], Rp_plus_Rm[1], Rp_plus_Rm[2], angle, microphone_type[0]) * refl[0] * refl[1] * refl[2] / (4 * np.pi * dist * cTs)
 
                                         for n in range(Tw):
                                             t = (n - 0.5 * Tw + 1) - (dist - fdist)
-                                            LPI[n] = 0.5 * (1.0 + np.cos(2 * pi * t / Tw)) * np.sinc(pi * 2 * Fc * t)
+                                            LPI[n] = 0.5 * (1.0 + np.cos(2 * np.pi * t / Tw)) * np.sinc(np.pi * 2 * Fc * t)
 
                                         startPosition = int(fdist - (Tw / 2) + 1)
 
@@ -140,7 +140,7 @@ def rir_generator(c, samplingRate, micPositions, srcPosition, LL, **kwargs):
         betaIn = kwargs['beta']
         if type(betaIn) is not np.array:
             betaIn = np.transpose(np.array(betaIn, ndmin=2))
-        if (betaIn.shape[1]) > 1:
+        if (betaIn.shape[0]) == 6:
             beta = betaIn
             V = LL[0] * LL[1] * LL[2]
             alpha = ((1 - pow(beta[0], 2)) + (1 - pow(beta[1], 2))) * LL[0] * LL[2] + ((1 - pow(beta[2], 2)) + (1 - pow(beta[3], 2))) * LL[1] * LL[2] + ((1 - pow(beta[4], 2)) + (1 - pow(beta[5], 2))) * LL[0] * LL[1]
@@ -201,16 +201,16 @@ def rir_generator(c, samplingRate, micPositions, srcPosition, LL, **kwargs):
             beta[5] = 0
 
     """Orientation"""
-    angle = np.zeros([2,1], dtype=np.double)
+    angle = np.zeros([2, 1], dtype=np.double)
     if 'orientation' in kwargs:
         orientation = kwargs['orientation']
         if type(orientation) is not np.array:
-            orientation = np.array(orientation,ndmin=2)
+            orientation = np.array(orientation, ndmin=2)
         if orientation.shape[1] == 1:
             angle[0] = orientation[0]
         else:
-            angle[0] = orientation[0,0]
-            angle[1] = orientation[0,1]
+            angle[0] = orientation[0, 0]
+            angle[1] = orientation[0, 1]
 
     """hp_filter enable"""
     isHighPassFilter = 1
