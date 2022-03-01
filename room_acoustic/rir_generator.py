@@ -82,7 +82,6 @@ def computeRIR(c, fs, rr, nMicrophones, nSamples, ss, LL, beta, microphone_type,
                             refl[1] = pow(beta[2], abs(my - j)) * pow(beta[3], abs(my))
 
                             for k in range(2):
-
                                 Rp_plus_Rm[2] = (1 - 2 * k) * s[2] - r[2] + Rm[2]
                                 refl[2] = pow(beta[4], abs(mz - k)) * pow(beta[5], abs(mz))
 
