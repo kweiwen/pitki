@@ -34,11 +34,15 @@ def sim_microphone(x, y, z, angle, mtype):
 def computeRIR(c, fs, rr, nMicrophones, nSamples, ss, LL, beta, microphone_type, nOrder, angle, isHighPassFilter):
     imp = np.zeros([nSamples, nMicrophones], dtype=np.double)
 
-    Fc = 0.5
-    Tw = 2 * round(0.004 * fs)
+    # frequency cut of idea
+    Fc = 1
+
+    #
+    width = 2 * round(0.004 * fs)
+
     cTs = c / fs
 
-    hann_window = 0.5 * (1 + np.cos(np.linspace(-np.pi, np.pi, Tw+1)))
+    hann_window = 0.5 * (1 + np.cos(np.linspace(-np.pi, np.pi, width+1)))
 
     r = np.zeros(3)
     s = np.zeros(3)
@@ -94,15 +98,15 @@ def computeRIR(c, fs, rr, nMicrophones, nSamples, ss, LL, beta, microphone_type,
                                     if fdist < nSamples:
                                         gain = sim_microphone(Rp_plus_Rm[0], Rp_plus_Rm[1], Rp_plus_Rm[2], angle, microphone_type[0]) * refl[0] * refl[1] * refl[2] / (4 * np.pi * dist * cTs)
 
-                                        n = np.arange(Tw + 1)
-                                        t = (n - 0.5 * Tw) - (dist - fdist)
-                                        LPI = hann_window * 2 * Fc * np.sinc(2 * Fc * t)
+                                        n = np.arange(width + 1)
+                                        t = (n - 0.5 * width) - (dist - fdist)
+                                        LPI = hann_window * np.sinc(Fc * t)
 
-                                        startPosition = int(fdist - (0.5 * Tw))
+                                        startPosition = int(fdist - (0.5 * width))
                                         centerPosition = fdist
-                                        endPosition = int(fdist + (0.5 * Tw))
+                                        endPosition = int(fdist + (0.5 * width))
 
-                                        for n in range(Tw+1):
+                                        for n in range(width+1):
                                             if startPosition + n >= 0 and startPosition + n < nSamples:
                                                 imp[startPosition + n][idxMicrophone] += gain * LPI[n]
 
