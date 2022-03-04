@@ -38,13 +38,14 @@ def computeRIR(c, fs, rr, nMicrophones, nSamples, ss, LL, beta, microphone_type,
     Tw = 2 * round(0.004 * fs)
     cTs = c / fs
 
-    LPI = [0] * Tw
-    r = [0] * 3
-    s = [0] * 3
-    L = [0] * 3
-    Rm = [0] * 3
-    Rp_plus_Rm = [0] * 3
-    refl = [0] * 3
+    hann_window = 0.5 * (1.0 + np.cos(2 * np.pi * (np.arange(Tw+1) + Tw/2) / Tw))
+
+    r = np.zeros(3)
+    s = np.zeros(3)
+    L = np.zeros(3)
+    Rm = np.zeros(3)
+    Rp_plus_Rm = np.zeros(3)
+    refl = np.zeros(3)
 
     s[0] = ss[0] / cTs
     s[1] = ss[1] / cTs
@@ -93,13 +94,13 @@ def computeRIR(c, fs, rr, nMicrophones, nSamples, ss, LL, beta, microphone_type,
                                     if fdist < nSamples:
                                         gain = sim_microphone(Rp_plus_Rm[0], Rp_plus_Rm[1], Rp_plus_Rm[2], angle, microphone_type[0]) * refl[0] * refl[1] * refl[2] / (4 * np.pi * dist * cTs)
 
-                                        for n in range(Tw):
-                                            t = (n - 0.5 * Tw + 1) - (dist - fdist)
-                                            LPI[n] = 0.5 * (1.0 + np.cos(2 * np.pi * t / Tw)) * np.sinc(np.pi * 2 * Fc * t)
+                                        n = np.arange(Tw + 1)
+                                        t = (n - 0.5 * Tw) - (dist - fdist)
+                                        LPI = hann_window * np.sinc(2 * Fc * t)
 
-                                        startPosition = int(fdist - (Tw / 2) + 1)
+                                        startPosition = int(fdist - (Tw * 0.5))
 
-                                        for n in range(Tw):
+                                        for n in range(Tw+1):
                                             if startPosition + n >= 0 and startPosition + n < nSamples:
                                                 imp[idxMicrophone + nMicrophones * (startPosition + n)] += gain * LPI[n]
 
