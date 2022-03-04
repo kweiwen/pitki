@@ -38,7 +38,7 @@ def computeRIR(c, fs, rr, nMicrophones, nSamples, ss, LL, beta, microphone_type,
     Tw = 2 * round(0.004 * fs)
     cTs = c / fs
 
-    hann_window = 0.5 * (1.0 + np.cos(2 * np.pi * (np.arange(Tw+1) + Tw/2) / Tw))
+    hann_window = 0.5 * (1 + np.cos(np.linspace(-np.pi, np.pi, Tw+1)))
 
     r = np.zeros(3)
     s = np.zeros(3)
@@ -96,13 +96,15 @@ def computeRIR(c, fs, rr, nMicrophones, nSamples, ss, LL, beta, microphone_type,
 
                                         n = np.arange(Tw + 1)
                                         t = (n - 0.5 * Tw) - (dist - fdist)
-                                        LPI = hann_window * np.sinc(2 * Fc * t)
+                                        LPI = hann_window * 2 * Fc * np.sinc(2 * Fc * t)
 
-                                        startPosition = int(fdist - (Tw * 0.5))
+                                        startPosition = int(fdist - (0.5 * Tw))
+                                        centerPosition = fdist
+                                        endPosition = int(fdist + (0.5 * Tw))
 
                                         for n in range(Tw+1):
                                             if startPosition + n >= 0 and startPosition + n < nSamples:
-                                                imp[idxMicrophone + nMicrophones * (startPosition + n)] += gain * LPI[n]
+                                                imp[startPosition + n][idxMicrophone] += gain * LPI[n]
 
         # HIGH Pass FILTER
         W = 2 * pi * 100 / fs
