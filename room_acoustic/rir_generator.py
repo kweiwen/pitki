@@ -96,7 +96,8 @@ def computeRIR(c, fs, rr, nMicrophones, nSamples, ss, LL, beta, microphone_type,
                                     fdist = floor(dist)
 
                                     if fdist < nSamples:
-                                        gain = sim_microphone(Rp_plus_Rm[0], Rp_plus_Rm[1], Rp_plus_Rm[2], angle, microphone_type[0]) * refl[0] * refl[1] * refl[2] / (4 * np.pi * dist * cTs)
+                                        mic_gain = sim_microphone(Rp_plus_Rm[0], Rp_plus_Rm[1], Rp_plus_Rm[2], angle, microphone_type[0])
+                                        gain = mic_gain  * refl[0] * refl[1] * refl[2] / (4 * np.pi * dist * cTs)
 
                                         n = np.arange(width + 1)
                                         t = (n - 0.5 * width) - (dist - fdist)
