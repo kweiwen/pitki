@@ -133,12 +133,12 @@ def err_diff(d1, d2, a, b):
     
     return np.abs(np.max([np.max(b-num), np.max(a-den)]))
 
-def get_diff(d1, d2):
+def get_diff(d1, d2, beta):
     num = 0.5 * np.convolve(d1[::-1], d2) * beta - 0.5 * np.convolve(d2[::-1], d1) * beta
     den = np.convolve(d1, d2)
     return num, den
 
-def get_sum(d1, d2):
+def get_sum(d1, d2, beta):
     num = 0.5 * np.convolve(d1[::-1], d2) * beta + 0.5 * np.convolve(d2[::-1], d1) * beta
     den = np.convolve(d1, d2)
     return num, den
