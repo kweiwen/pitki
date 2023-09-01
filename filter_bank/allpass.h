@@ -9,12 +9,6 @@ typedef struct coupled_allpass_
     double neg;
 }coupled_allpass;
 
-typedef struct coupled_dual_iir_ 
-{
-    dual_iir h1;
-    dual_iir h2;
-}coupled_dual_iir;
-
 typedef struct stereo_coupled_allpass_ 
 {
     coupled_allpass L;
@@ -97,4 +91,16 @@ void process_stereo_coupled_allpass(stereo_coupled_allpass* self, double L, doub
 {
     process_coupled_allpass(&self->L, L);
     process_coupled_allpass(&self->R, R);
+}
+
+void init_stereo_allpass(dual_iir* self, int a, double* coeff_a, double* xL, double* yL, double* xR, double* yR)
+{
+    init_allpass(&self->L, a, coeff_a, xL, yL);
+    init_allpass(&self->R, a, coeff_a, xR, yR);
+}
+
+void process_stereo_allpass(dual_iir* self, double L, double R)
+{
+    process_allpass(&self->L, L);
+    process_allpass(&self->R, R);
 }
