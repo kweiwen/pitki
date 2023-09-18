@@ -36,13 +36,11 @@ void init_iir(iir* self, double* b, double* _a, int bSize, int aSize, double* co
 
     for (int i = 0; i < 2 * self->len_a - 1; i++)
     {
-        // std::cout << "index: " << i << "value:" << a[(2 * self->len_a - 2 - i) % self->len_a] / a0 << std::endl;
         self->coeff_a[i] = a[(2 * self->len_a - 2 - i) % self->len_a] / a0;
     }
 
     for (int i = 0; i < 2 * self->len_b - 1; i++)
     {
-        // std::cout << "index: " << i << "value:" << b[(2 * self->len_b - 1 - i) % self->len_b] / a0 << std::endl;
         self->coeff_b[i] = b[(2 * self->len_b - 1 - i) % self->len_b] / a0;
     }
 
